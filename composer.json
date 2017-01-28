@@ -8,14 +8,15 @@
         }
     ],
     "require": {
-
+        "league/flysystem": "^1.0",
+        "gossi/php-code-generator": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7"
     },
     "autoload": {
-        "psr-0": {
-            "JsonSchemaToPhpGenerator": "src/"
+        "psr-4": {
+            "mpmontanez\\JsonSchemaToPhpGenerator\\": "src/JsonSchemaToPhpGenerator/"
         }
     }
 }

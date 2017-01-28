@@ -1,11 +1,14 @@
-<?
+<?php
 
 class GeneratorTest extends PHPUnit_Framework_TestCase
 {
 
     public function testGenerate()
     {
-        $this->assertTrue(true);
+        $generator = new \mpmontanez\JsonSchemaToPhpGenerator\Generator();
+        $result = $generator->generate();
+
+        $this->assertTrue($result);
     }
 
 }
