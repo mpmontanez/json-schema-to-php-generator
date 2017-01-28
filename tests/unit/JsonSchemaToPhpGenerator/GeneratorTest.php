@@ -1,8 +1,6 @@
 <?
 
-use PHPUnit\Framework\TestCase;
-
-class GeneratorTest extends TestCase
+class GeneratorTest extends PHPUnit_Framework_TestCase
 {
 
     public function testGenerate()
