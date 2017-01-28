@@ -1,0 +1,11 @@
+{
+    "name": "mpmontanez/json-schema-to-php-generator",
+    "description": "Code generation tool for converting JSON schema documents to simple PHP classes.",
+    "authors": [
+        {
+            "name": "Matthew Montanez",
+            "email": "mpmontanez@gmail.com"
+        }
+    ],
+    "require": {}
+}
