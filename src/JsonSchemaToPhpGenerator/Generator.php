@@ -6,6 +6,7 @@ use gossi\codegen\generator\CodeGenerator;
 use gossi\codegen\model\PhpClass;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
+use gossi\codegen\model\PhpProperty;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use mpmontanez\JsonSchemaToPhpGenerator\Exceptions\UnknownJsonSchemaTypeException;
@@ -72,10 +73,21 @@ class Generator
         $className = $this->determineClassNameFromSchemaTitle($schema['title']);
 
         $class = new PhpClass();
+
+        // Class base.
         $class
             ->setQualifiedName($this->config['generated-code']['namespace'] . $className)
             ->setDescription('Auto-generated class from JSON schema file.')
         ;
+
+        // Class properties.
+        $properties = !empty($schema['properties']) ? $schema['properties'] : [];
+        foreach ($properties as $name => $property) {
+            $class->setProperty(PhpProperty::create($name)
+                ->setVisibility('private')
+                ->setType('string')
+            );
+        }
 
         $generator = new CodeGenerator();
         return '<?php ' . PHP_EOL . PHP_EOL . $generator->generate($class);
