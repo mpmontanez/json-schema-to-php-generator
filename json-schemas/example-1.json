@@ -10,7 +10,7 @@
     },
     "age": {
       "description": "Age in years",
-      "type": "integer",
+      "type": "number",
       "minimum": 0
     }
   },

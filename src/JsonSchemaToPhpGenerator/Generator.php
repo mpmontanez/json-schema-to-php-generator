@@ -10,6 +10,7 @@ use gossi\codegen\model\PhpProperty;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use mpmontanez\JsonSchemaToPhpGenerator\Exceptions\UnknownJsonSchemaTypeException;
+use mpmontanez\JsonSchemaToPhpGenerator\JsonSchema\Instance\InstanceFactory;
 
 class Generator 
 {
@@ -97,24 +98,12 @@ class Generator
         // Class properties.
         $properties = !empty($schema['properties']) ? $schema['properties'] : [];
         foreach ($properties as $name => $property) {
-            // Determine the property type.
-            $propertyType = $property['type'];
-            // Default property type for now.
-            if (!in_array($propertyType, ['string', 'object', 'number'])) {
-                $propertyType = 'string';
-            }
-            // Normalize the property type.
-            if ($propertyType == 'object') {
-                $propertyType = '\stdClass';
-            }
-            elseif ($propertyType == 'number') {
-                $propertyType = 'int';
-            }
+            $jsonSchemaInstance = InstanceFactory::buildInstance($property['type']);
 
             // Private property attributes.
             $class->setProperty(PhpProperty::create($name)
                 ->setVisibility('private')
-                ->setType($propertyType)
+                ->setType($jsonSchemaInstance->getPhpDataType())
             );
 
             // Getter method(s).
