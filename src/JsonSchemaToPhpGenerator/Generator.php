@@ -100,12 +100,15 @@ class Generator
             // Determine the property type.
             $propertyType = $property['type'];
             // Default property type for now.
-            if (!in_array($propertyType, ['string', 'object'])) {
+            if (!in_array($propertyType, ['string', 'object', 'number'])) {
                 $propertyType = 'string';
             }
             // Normalize the property type.
             if ($propertyType == 'object') {
                 $propertyType = '\stdClass';
+            }
+            elseif ($propertyType == 'number') {
+                $propertyType = 'int';
             }
 
             // Private property attributes.
