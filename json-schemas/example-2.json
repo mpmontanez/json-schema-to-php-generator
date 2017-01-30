@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "product-listing-item.json",
+  "type": "object",
+  "title": "Product Listing Item Example",
+  "description": "",
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "image": {
+      "type": "object",
+      "$ref": "image.json"
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "href": {
+          "type": "string"
+        }
+      },
+      "required": ["href"]
+    }
+  },
+  "required": ["title", "image", "link"]
+}

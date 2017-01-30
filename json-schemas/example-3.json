@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "image.json",
+  "type": "object",
+  "title": "Image Schema",
+  "description": "Represents an image.",
+  "properties": {
+    "width": {
+      "description": "Image width.",
+      "type": "number"
+    },
+    "height": {
+      "description": "Image height.",
+      "type": "number"
+    },
+    "src": {
+      "description": "Valid image source (e.g. relative or absolute URL, base64 encoded data)",
+      "type": "string",
+      "minLength": 1
+    },
+    "alt": {
+      "description": "Alternate text, e.g. for the visually impaired or when the image fails to download",
+      "type": "string"
+    },
+    "is_adult_content": {
+      "description": "Does this image contain content unsuitable for minors?",
+      "type": "boolean"
+    }
+  },
+  "required": ["src", "dimensions"]
+}

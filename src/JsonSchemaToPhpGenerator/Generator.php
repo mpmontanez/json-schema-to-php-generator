@@ -35,26 +35,35 @@ class Generator
 
     public function generate()
     {
-        // Empty the destination directory.
-        $this->fileSystem->deleteDir($this->config['json-schemas']['dest-dir']);
-        $this->fileSystem->createDir($this->config['json-schemas']['dest-dir']);
+        $this->refreshDestinationDir($this->config['json-schemas']['dest-dir']);
 
         // Read JSON schema file(s) from a source directory.
         $jsonSchemaFiles = $this->fileSystem->listContents($this->config['json-schemas']['source-dir']);
         foreach ($jsonSchemaFiles as $jsonSchemaFile) {
-            $contents = $this->fileSystem->read($jsonSchemaFile['path']);
-            $schema = json_decode($contents, true);
-
-            // Generate code.
-            $code = $this->generatePhpCodeFromSchema($schema);
-
-            // Write .php files to a destination directory.
-            $fileName = $this->determineClassNameFromSchemaTitle($schema['title']) . '.php';
-            $filePath = $this->config['json-schemas']['dest-dir'] . '/' . $fileName;
-            $this->fileSystem->write($filePath, $code);
+            $this->generatePhpCodeFromSchemaPathAndWriteFiles($jsonSchemaFile['path']);
         }
 
         return true;
+    }
+
+    protected function refreshDestinationDir($destinationDir)
+    {
+        $this->fileSystem->deleteDir($destinationDir);
+        $this->fileSystem->createDir($destinationDir);
+    }
+
+    protected function generatePhpCodeFromSchemaPathAndWriteFiles($schemaPath)
+    {
+        $jsonSchema = $this->fileSystem->read($schemaPath);
+        $schema = json_decode($jsonSchema, true);
+
+        // Generate code.
+        $code = $this->generatePhpCodeFromSchema($schema);
+
+        // Write .php files to a destination directory.
+        $fileName = $this->determineClassNameFromSchemaTitle($schema['title']) . '.php';
+        $filePath = $this->config['json-schemas']['dest-dir'] . '/' . $fileName;
+        $this->fileSystem->write($filePath, $code);
     }
 
     protected function generatePhpCodeFromSchema($schema)
@@ -62,10 +71,15 @@ class Generator
         $type = $schema['type'];
 
         if ($type === 'object') {
-            return $this->generatePhpClassFromSchema($schema);
+            return $this->preprendPhpFileHeader($this->generatePhpClassFromSchema($schema));
         }
 
         throw new UnknownJsonSchemaTypeException('Unknown schema type: ' . $type);
+    }
+
+    protected function preprendPhpFileHeader($code)
+    {
+        return '<?php ' . PHP_EOL . PHP_EOL . $code;
     }
 
     protected function generatePhpClassFromSchema($schema)
@@ -83,18 +97,49 @@ class Generator
         // Class properties.
         $properties = !empty($schema['properties']) ? $schema['properties'] : [];
         foreach ($properties as $name => $property) {
+            // Determine the property type.
+            $propertyType = $property['type'];
+            // Default property type for now.
+            if (!in_array($propertyType, ['string', 'object'])) {
+                $propertyType = 'string';
+            }
+            // Normalize the property type.
+            if ($propertyType == 'object') {
+                $propertyType = '\stdClass';
+            }
+
+            // Private property attributes.
             $class->setProperty(PhpProperty::create($name)
                 ->setVisibility('private')
-                ->setType('string')
+                ->setType($propertyType)
+            );
+
+            // Getter method(s).
+            $class->setMethod(PhpMethod::create($this->buildGetterMethodNameFromString($name))
+                ->setDescription('Provides the ' . $name . ' attribute.')
+                ->setBody('return $this->' . $name . ';')
             );
         }
 
         $generator = new CodeGenerator();
-        return '<?php ' . PHP_EOL . PHP_EOL . $generator->generate($class);
+        return $generator->generate($class);
+    }
+
+    protected function buildGetterMethodNameFromString($str)
+    {
+        // Convert snake-case to camel-case.
+        $parts = explode('_', $str);
+        foreach ($parts as $index => $part) {
+            $parts[$index] = ucfirst($part);
+        }
+        $str = join('', $parts);
+
+        return lcfirst($str);
     }
 
     protected function determineClassNameFromSchemaTitle($schemaTitle)
     {
         return str_replace(' ', '', $schemaTitle);
     }
+
 }

@@ -16,7 +16,8 @@
     },
     "autoload": {
         "psr-4": {
-            "mpmontanez\\JsonSchemaToPhpGenerator\\": "src/JsonSchemaToPhpGenerator/"
+            "mpmontanez\\JsonSchemaToPhpGenerator\\": "src/JsonSchemaToPhpGenerator/",
+            "Sample\\GeneratedCode\\": "generated-code"
         }
     }
 }
