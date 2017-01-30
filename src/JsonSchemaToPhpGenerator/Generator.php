@@ -17,20 +17,20 @@ class Generator
     protected $config;
     protected $fileSystem;
 
-    public function __construct()
+    public function __construct($workingDir, $sourceDir, $destDir, $namespace)
     {
         $this->config = [
             'json-schemas' => [
-                'source-dir' => 'json-schemas',
-                'dest-dir'   => 'generated-code'
+                'source-dir' => $sourceDir,
+                'dest-dir'   => $destDir
             ],
             'generated-code' => [
-                'namespace' => 'Sample\\GeneratedCode\\'
+                'namespace' => $namespace
             ],
-            'application' => ['root-dir' => __DIR__ . '/../../']
+            'application' => ['root-dir' => $workingDir]
         ];
 
-        $adapter = new Local(__DIR__ . '/../../');
+        $adapter = new Local($workingDir);
         $this->fileSystem = new Filesystem($adapter);
     }
 
