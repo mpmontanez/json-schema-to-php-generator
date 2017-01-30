@@ -19,3 +19,13 @@ The schema source directory will be the 'json-schemas' folder and the code will 
     }
 }
 ```
+
+## Usage
+To generate PHP code from a set of JSON schema files, provide the following paramters to the Generator: the base working directory, the JSON schema source folder name, the generated code destination folder name, and the base namespace to use for the generated PHP classes.
+
+*BEWARE* The initial contents of the destination folder will be deleted when calling generate().
+```
+$generator = new \mpmontanez\JsonSchemaToPhpGenerator\Generator(
+    __DIR__ . '/../', 'json-schemas', 'generated-code', 'Sample\\GeneratedCode\\');
+$generator->generate();
+```
